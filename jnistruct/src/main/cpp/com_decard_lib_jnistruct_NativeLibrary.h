@@ -23,6 +23,14 @@ JNIEXPORT jobject JNICALL Java_com_decard_lib_jnistruct_NativeLibrary_getDataFro
 JNIEXPORT void JNICALL Java_com_decard_lib_jnistruct_NativeLibrary_transferDataToNative
   (JNIEnv *, jclass, jobject);
 
+/*
+ * Class:     com_decard_lib_jnistruct_NativeLibrary
+ * Method:    Com_Msg_StateUp
+ * Signature: (Lcom/decard/lib/jnistruct/data/DevStateInfo;)I
+ */
+JNIEXPORT jint JNICALL Java_com_decard_lib_jnistruct_NativeLibrary_Com_1Msg_1StateUp
+  (JNIEnv *, jclass, jobject);
+
 #ifdef __cplusplus
 }
 #endif

@@ -4,6 +4,7 @@
 
 #include <jni.h>
 #include "DataBean.h"
+#include "cob_ridecode_def.h"
 
 #ifndef OPENFRAME_REGISTER_H
 
@@ -28,14 +29,14 @@ typedef struct point_block_t {
     jmethodID constructor;
 } point_block;
 
-// 对应 com.decard.lib.jnistruct.DataBean$Inner 类
+// 对应 com.decard.lib.jnistruct.data.DataBean$Inner 类
 typedef struct inner_block_t {
     jclass clazz;
     jfieldID message;
     jmethodID constructor;
 } inner_block;
 
-// 对应 com.decard.lib.jnistruct.DataBean 类
+// 对应 com.decard.lib.jnistruct.data.DataBean 类
 typedef struct data_bean_block_t {
     jclass clazz;
     jfieldID rect;
@@ -50,6 +51,22 @@ typedef struct data_bean_block_t {
     jmethodID constructor;
 } data_bean_block;
 
+// 对应 com.decard.lib.jnistruct.data.DevStateInfo 类
+typedef struct dev_state_info_t {
+    jclass clazz;
+    jfieldID ucAppVer;
+    jfieldID ucAliQrCAVer;
+    jfieldID ucCupQrCAVer;
+    jfieldID ucAliEarliestTime;
+    jfieldID uiAliNotUpCnt;
+    jfieldID ucCupEarliestTime;
+    jfieldID uiCupNotUpCnt;
+    jfieldID ucOdaEarliestTime;
+    jfieldID uiOdaNotUpCnt;
+    jfieldID ucNetworkFlow;
+    jmethodID constructor;
+} dev_state_info_block;
+
 // 注册
 void register_classes(JNIEnv *env);
 
@@ -58,6 +75,8 @@ jobject data_bean_c_to_java(JNIEnv *env, jni_data_bean *data_bean);
 
 // Java类转C结构体
 void data_bean_java_to_c(JNIEnv *env, jobject data_bean_in, jni_data_bean *data_bean_out);
+
+void data_devinfo_java_to_c(JNIEnv *env, jobject data_devinfo_in, COB_DEVSTATE_INFO *cobDevstateInfo);
 
 
 #endif //OPENFRAME_REGISTER_H

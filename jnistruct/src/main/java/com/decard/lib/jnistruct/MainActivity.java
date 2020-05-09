@@ -4,6 +4,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 
 import com.decard.lib.jnistruct.data.DataBean;
+import com.decard.lib.jnistruct.data.DevStateInfo;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -41,6 +42,19 @@ public class MainActivity extends AppCompatActivity {
         dataBean.setmScore(100);
         dataBean.getmInner().mMessage = "data from java";
         nativeLibrary.transferDataToNative(dataBean);
+
+        DevStateInfo devStateInfo = new DevStateInfo();
+        devStateInfo.setUcAppVer("V1.0.0");
+        devStateInfo.setUcAliEarliestTime("20200509");
+        devStateInfo.setUiAliNotUpCnt(10);
+        devStateInfo.setUcAliQrCAVer("0001");
+        devStateInfo.setUcCupQrCAVer("0002");
+        devStateInfo.setUcCupEarliestTime("20200509");
+        devStateInfo.setUiCupNotUpCnt(20);
+        devStateInfo.setUcOdaEarliestTime("20200510");
+
+        int i = nativeLibrary.Com_Msg_StateUp(devStateInfo);
+        Log.e(TAG, "onCreate: "+i );
     }
 
     @Override

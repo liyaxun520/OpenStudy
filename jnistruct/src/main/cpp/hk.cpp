@@ -6,6 +6,7 @@
 #include "Register.h"
 #include "LogUtil.h"
 #include "DataBean.h"
+#include "cob_ridecode_def.h"
 
 
 void print(jni_data_bean *data_bean);
@@ -78,3 +79,13 @@ void print(jni_data_bean *data_bean) {
         }
     }
 }
+
+extern "C"
+JNIEXPORT jint JNICALL Java_com_decard_lib_jnistruct_NativeLibrary_Com_1Msg_1StateUp
+        (JNIEnv *env, jclass jcls, jobject devInfo){
+    COB_DEVSTATE_INFO cobDevstateInfo;
+    memset(&cobDevstateInfo,0, sizeof(COB_DEVSTATE_INFO));
+
+    data_devinfo_java_to_c(env,devInfo,&cobDevstateInfo);  //设备状态数据适配
+    return 0;
+};

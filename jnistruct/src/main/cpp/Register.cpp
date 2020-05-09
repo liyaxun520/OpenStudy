@@ -10,6 +10,7 @@ rect_block m_rect_block;
 point_block m_point_block;
 inner_block m_inner_block;
 data_bean_block m_data_bean_block;
+dev_state_info_block m_dev_state_info_block;
 
 int find_class(JNIEnv *env, const char *name, jclass *clazz_out) {
     jclass clazz = env->FindClass(name);
@@ -73,6 +74,25 @@ void register_inner_class(JNIEnv *env) {
     // 成员
     get_field(env, &clazz, "mMessage", "Ljava/lang/String;", &m_inner_block.message);
 }
+void register_devstate_class(JNIEnv *env){
+    int ret = find_class(env,"com/decard/lib/jnistruct/data/DevStateInfo",&m_dev_state_info_block.clazz);
+    if(ret !=0){
+        LOGE("register_devstate_class failed");
+        return;
+    }
+    jclass clazz = m_dev_state_info_block.clazz;
+    m_dev_state_info_block.constructor = env->GetMethodID(clazz, "<init>", "()V");
+    get_field(env,&clazz,"ucAppVer","Ljava/lang/String;",&m_dev_state_info_block.ucAppVer);
+    get_field(env,&clazz,"ucAliQrCAVer","Ljava/lang/String;",&m_dev_state_info_block.ucAliQrCAVer);
+    get_field(env,&clazz,"ucCupQrCAVer","Ljava/lang/String;",&m_dev_state_info_block.ucCupQrCAVer);
+    get_field(env,&clazz,"ucAliEarliestTime","Ljava/lang/String;",&m_dev_state_info_block.ucAliEarliestTime);
+    get_field(env,&clazz,"uiAliNotUpCnt","I",&m_dev_state_info_block.uiAliNotUpCnt);
+    get_field(env,&clazz,"ucCupEarliestTime","Ljava/lang/String;",&m_dev_state_info_block.ucCupEarliestTime);
+    get_field(env,&clazz,"uiCupNotUpCnt","I",&m_dev_state_info_block.uiCupNotUpCnt);
+    get_field(env,&clazz,"ucOdaEarliestTime","Ljava/lang/String;",&m_dev_state_info_block.ucOdaEarliestTime);
+    get_field(env,&clazz,"uiOdaNotUpCnt","I",&m_dev_state_info_block.uiOdaNotUpCnt);
+    get_field(env,&clazz,"ucNetworkFlow","Ljava/lang/String;",&m_dev_state_info_block.ucNetworkFlow);
+}
 
 void register_data_bean_class(JNIEnv *env) {
     int ret = find_class(env, "com/decard/lib/jnistruct/data/DataBean", &m_data_bean_block.clazz);
@@ -98,6 +118,7 @@ void register_classes(JNIEnv *env) {
     register_point_class(env);
     register_data_bean_class(env);
     register_inner_class(env);
+    register_devstate_class(env);
 }
 
 jobject data_bean_c_to_java(JNIEnv *env, jni_data_bean *c_data_bean) {
@@ -214,4 +235,55 @@ void data_bean_java_to_c(JNIEnv *env, jobject data_bean_in, jni_data_bean *data_
     }
 
     LOGD("end data_bean_java_to_c");
+}
+
+void data_devinfo_java_to_c(JNIEnv *env, jobject data_devinfo_in, COB_DEVSTATE_INFO *cobDevstateInfo){
+    if (data_devinfo_in == nullptr) {
+        LOGW("input data_devinfo_java_to_c is null!");
+        return;
+    }
+    LOGD("start data_devinfo_java_to_c");
+    jstring ucAppVerStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucAppVer));
+    const char * ucAppVerStrChar = env->GetStringUTFChars(ucAppVerStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucAppVer,ucAppVerStrChar,strlen(ucAppVerStrChar));
+    LOGD("应用版本号  %s   ",cobDevstateInfo->ucAppVer);
+
+    jstring ucAliQrCAVerStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucAliQrCAVer));
+    const char * ucAliQrCAVerStrChar = env->GetStringUTFChars(ucAliQrCAVerStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucAliQrCAVer,ucAliQrCAVerStr,strlen(ucAliQrCAVerStrChar));
+    LOGD("支付宝乘车码CA版本号  %s   ",cobDevstateInfo->ucAliQrCAVer);
+
+    jstring ucCupQrCAVerStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucCupQrCAVer));
+    const char * ucCupQrCAVerStrChar = env->GetStringUTFChars(ucCupQrCAVerStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucCupQrCAVer,ucCupQrCAVerStr,strlen(ucCupQrCAVerStrChar));
+    LOGD("银联乘车码CA版本号  %s   ",cobDevstateInfo->ucCupQrCAVer);
+
+    jstring ucAliEarliestTimeStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucAliEarliestTime));
+    const char * ucAliEarliestTimeStrChar = env->GetStringUTFChars(ucAliEarliestTimeStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucAliEarliestTime,ucAliEarliestTimeStrChar,strlen(ucAliEarliestTimeStrChar));
+    LOGD("支付宝乘车码未上送最早时间  %s   ",cobDevstateInfo->ucAliEarliestTime);
+
+
+    cobDevstateInfo->uiAliNotUpCnt = env->GetIntField(data_devinfo_in,m_dev_state_info_block.uiAliNotUpCnt);
+    LOGD("支付宝乘车码未上送笔数  %d   ",cobDevstateInfo->uiAliNotUpCnt);
+
+    jstring ucCupEarliestTimeStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucCupEarliestTime));
+    const char * ucCupEarliestTimeStrChar = env->GetStringUTFChars(ucCupEarliestTimeStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucCupEarliestTime,ucCupEarliestTimeStrChar,strlen(ucCupEarliestTimeStrChar));
+    LOGD("银联乘车码未上送最早时间  %s   ",cobDevstateInfo->ucCupEarliestTime);
+    cobDevstateInfo->uiCupNotUpCnt = env->GetIntField(data_devinfo_in,m_dev_state_info_block.uiCupNotUpCnt);
+    LOGD("银联乘车码未上送笔数  %d   ",cobDevstateInfo->uiCupNotUpCnt);
+
+    jstring ucOdaEarliestTimeStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucOdaEarliestTime));
+    const char * ucOdaEarliestTimeStrChar = env->GetStringUTFChars(ucOdaEarliestTimeStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucOdaEarliestTime,ucOdaEarliestTimeStrChar,strlen(ucOdaEarliestTimeStrChar));
+    LOGD("oda未上送最早时间  %s   ",cobDevstateInfo->ucCupEarliestTime);
+
+    cobDevstateInfo->uiOdaNotUpCnt = env->GetIntField(data_devinfo_in,m_dev_state_info_block.uiOdaNotUpCnt);
+    LOGD("oda未上送笔数  %d   ",cobDevstateInfo->uiOdaNotUpCnt);
+
+    jstring ucNetworkFlowStr = static_cast<jstring>(env->GetObjectField(data_devinfo_in,m_dev_state_info_block.ucNetworkFlow));
+    const char * ucNetworkFlowStrChar = env->GetStringUTFChars(ucNetworkFlowStr,JNI_FALSE);
+    memcpy(cobDevstateInfo->ucNetworkFlow,ucNetworkFlowStrChar,strlen(ucNetworkFlowStrChar));
+    LOGD("POS当日已使用流量  %s   ",cobDevstateInfo->ucNetworkFlow);
 }
