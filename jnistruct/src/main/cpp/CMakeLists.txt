@@ -19,6 +19,7 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
+        Register.cpp
         hk.cpp
          )
 
@@ -31,4 +32,5 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
         hk
+
         ${log-lib})
